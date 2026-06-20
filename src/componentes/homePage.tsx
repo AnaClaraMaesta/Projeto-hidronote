@@ -1,3 +1,5 @@
+import ClienteListar from "./clientesListar"
+
 export default function index(){
 
     return(
@@ -11,6 +13,7 @@ export default function index(){
 
                     <img loading="lazy" src="https://placehold.co/200x100" className="rounded"></img>
                 </header>
+                <ClienteListar />
             </div>
         </>
     )

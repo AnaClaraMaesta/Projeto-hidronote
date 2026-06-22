@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import Header from './componentes/homePage'
+import Header from './componentes/homePage';
+import {ProcesssosListar} from './componentes/processosListar';
 
 function App() {
 
@@ -8,7 +9,8 @@ function App() {
     <>
       <HashRouter>
         <Routes>
-          <Route path='/' element={<Header/>} />
+          <Route path='/' element={<Header/>} />  
+          <Route path='/processos/:clienteId' element={<ProcessosListar/>} />
         </Routes>
       </HashRouter>
     </>

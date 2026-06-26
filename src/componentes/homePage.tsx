@@ -12,7 +12,7 @@ export default function index(){
                     </div>
 
                     <div className="py-4 px-4">
-                        <img src="../assest/logo.png" alt="logo"
+                        <img src="./assest/logo.png" alt="logo"
                         className="rounded-xl shadow-lg ring-2 ring-white/20 backdrop-blur object-contain"></img>
                     </div>
 

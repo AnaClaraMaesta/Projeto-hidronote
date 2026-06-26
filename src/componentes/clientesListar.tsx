@@ -21,11 +21,16 @@ export default function ClienteListar(){
  return(
     <div className='min-h-screen bg-gray-50 p-8'>
         <div className='px-4 py-4'>    
-            <button className="border-gray-700 bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded transition-colors cursor-pointer">
+            <button 
+            onClick={() => {
+                console.log('teste')
+                navigate(`/adicionar`)
+            }
+            }
+            className="border-gray-700 bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded transition-colors cursor-pointer">
                 Adicionar cliente
             </button>
         </div>
-
 
         <div className='max-w-7xl mx-auto'>
 

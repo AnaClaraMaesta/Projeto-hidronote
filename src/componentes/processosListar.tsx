@@ -69,7 +69,11 @@ export function ProcessosListar(){
                                 </td>
                                 <td className='px-6 py-4'>{processo.poco?.numero_poco}</td>
                                 <td className='px-6 py-4'>
-                                    <button className='bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded transition-colors cursor-pointer'>
+                                    <button
+                                    onClick={() =>
+                                        navigate(`/arquivos/${processo.id}`)
+                                    } 
+                                    className='bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded transition-colors cursor-pointer'>
                                         ver arquivos
                                     </button>
                                 </td>

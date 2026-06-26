@@ -2,16 +2,13 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getProcessos } from '../services/getProcesso';
 import { getCliente } from '../services/getCliente';
-import type { Database } from '../types/database.types';
+import type { Processo, Cliente } from '../types/models.types';
 import { useNavigate } from 'react-router-dom';
-
-type Processo = Database['public']['Tables']['processo']['Row'];
-type Cliente = Database['public']['Tables']['clientes']['Row'];
 
 export function ProcessosListar(){
     const navigate = useNavigate();
 
-    const { clienteId } = useParams<{ clienteId: string }>();
+    const { clienteId } = useParams<{ clienteId: string}>();
     const [processo, setProcessos] = useState<Processo[]>([]);
     const [cliente, setCliente] = useState<Cliente | null>(null);
 
@@ -19,66 +16,69 @@ export function ProcessosListar(){
         if (!clienteId) return;
 
         async function fetchData() {
-        const [processoResult, clienteResult] = await Promise.all([ //dissipar duas buscas com promise all
-            getProcessos(Number(clienteId)),
-            getCliente(),
-        ]);
+            const [processoResult, clienteResult] = await Promise.all([ //dissipar duas buscas com promise all
+                getProcessos(Number(clienteId)),
+                getCliente(),
+            ]);
 
-        if (processoResult.success) setProcessos(processoResult.data);
-        else console.error(processoResult.error);
+            if (processoResult.success) setProcessos(processoResult.data ?? []);
+            else console.error(processoResult.error);
 
-        if (clienteResult.success) setCliente(clienteResult.data[0] ?? null);
-        else console.error(clienteResult.error);
+            if (clienteResult.success) setCliente(clienteResult.data[0] ?? null);
+            else console.error(clienteResult.error);
         }
 
+
+
         fetchData();
-    }, [clienteId]);
+    }, [clienteId],);
 
 
-    return(
-        <div>
+ return(
+    <div className='min-h-screen bg-gray-50 p-8'>
 
 
-        <div className='flex flex-col items-center justify-center mt-20'>
-            <h2><strong>Processos de {cliente?.nome ?? 'Carregando...'}</strong></h2>
+        <div className='max-w-7xl mx-auto'>
+            <h1 className='text-2xl font-bold text-gray-800 mb-6'>
+                <strong>Processos de {cliente?.nome ?? 'Carregando...'}</strong></h1>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th className='p-3'>Nome</th>
-                        <th className='p-3'>CPF/CNPJ</th>
-                        <th className='p-3'>Endereço</th>
-                        <th className='p-3'>Interessado</th>
-                        <th className='p-3'>N° do Poço</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {processo.map((processo) =>(
-                    <tr key={processo.id} className="border-b border-gray-200">
-                        <td className="p-3">{cliente?.nome}</td>
-                        <td className="p-3">{cliente?.cpf_cnpj}</td>
-                        <td className="p-3"></td>
-                    </tr>
-                ))}
-                </tbody>
-                {/* <ul>
-                    {processo.map((processo) => (
-                        <li key={processo.id}>
-                        <p>{cliente?.nome}</p>
-                        <p>{cliente?.cpf_cnpj}</p>
-                        <button
-                        onClick={()=>{
-                            navigate(`/processo/${processo.id}`)
-                        }}
-                        className="bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded cursor-pointer"
-                        >
-                            Abrir processo
-                        </button>
-                    </li>
-                    ))}
-                </ul> */}
+            <div className="bg-white rounded-xl shadow overflow-hidden">
+
+                <table className='w-full text-sm text-left text-gray-600'>
+                    <thead className='bg-gray-100 text-gray-700 uppercase text-xs'>
+                        <tr className='border-b-2 border-gray-300' >
+                            <th className='px-6 py-4'>Nome</th>
+                            <th className='px-6 py-4'>CPF/CNPJ</th>
+                            <th className='px-6 py-4'>Endereço</th>
+                            <th className='px-6 py-4'>Cidade</th>
+                            <th className='px-6 py-4'>Interessado</th>
+                            <th className='px-6 py-4'>N° do Poço</th>
+                            <th className='px-6 py-4'></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {processo.map((processo) =>(
+                            <tr key={processo.id} className='border-b border-gray-200'>
+                                <td className='px-6 py-4 font-medium text-gray-800'>{cliente?.nome}</td>
+                                <td className='px-6 py-4'>{cliente?.cpf_cnpj}</td>
+                                <td className='px-6 py-4'>{processo.poco?.endereco}</td>
+                                <td className='px-6 py-4'>{processo.poco?.cidade}</td>
+                                <td className='px-6 py-4'>
+                                    <div className='font-medium text-gray-800'>{processo.interessados?.nome}</div>    
+                                    <div className='text-xs text-gray-400 mt-0.5'>{processo.interessados?.cpf_cnpj}</div>
+                                </td>
+                                <td className='px-6 py-4'>{processo.poco?.numero_poco}</td>
+                                <td className='px-6 py-4'>
+                                    <button className='bg-blue-700 hover:bg-blue-900 text-white py-2 px-4 rounded transition-colors cursor-pointer'>
+                                        ver arquivos
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </div>
         </div>
+    </div>   
   );
 }

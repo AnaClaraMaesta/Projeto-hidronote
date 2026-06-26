@@ -1,10 +1,6 @@
 import supabase from '../lib/database';
-import type { Database } from '../types/database.types';
+import type {Cliente} from '../types/models.types';
 import type { ApiResponse } from '../types/api.types';
-
-
-type Cliente = Database['public']['Tables']['clientes']['Row'];
-
 
 export async function getCliente(): Promise<ApiResponse<Cliente[]>>{
   const {data, error} = await supabase

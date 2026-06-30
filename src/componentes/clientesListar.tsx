@@ -1,22 +1,40 @@
 import { useEffect, useState } from 'react';
-import {getCliente }from '../services/getCliente';
-import type {Cliente} from '../types/models.types';
+import type { Cliente } from '../types/models.types';
+import type { ApiResponse } from '../types/api.types';
 import { useNavigate } from 'react-router-dom';
 
-export default function ClienteListar(){
-    const navigate = useNavigate();
+export default function ClientesPage() {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-    const [clientes, setClientes] = useState<Cliente[]>([]); //valor aceito e valor inicial
+  useEffect(() => {
+    async function fetchClientes() {
+      try {
+        const res = await fetch('http://localhost:3001/clientes');
+        const json: ApiResponse<Cliente[]> = await res.json();
 
-    useEffect(() => {
-        async function fetchData() {
-            const result = await getCliente();
-            if(result.success) setClientes(result.data ?? []); //coalescencia nula , se return null / undefined, sua arrayVazio no lugar, n quebra o ts
-            else console.log(result.error);
-
+        if (!json.success) {
+          setError(json.error);
+          return;
         }
-        fetchData();
-    },[]);
+
+        setClientes(json.data);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Erro desconhecido';
+        setError(message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchClientes();
+  }, []);
+
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>Erro: {error}</p>;
+  
 
  return(
     <div className='min-h-screen bg-gray-50 p-8'>
@@ -40,7 +58,7 @@ export default function ClienteListar(){
                 <table className='w-full text-sm text-left text-gray-600'>
                     <thead className='bg-gray-100 text-gray-700 uppercase text-xs'>
                         <tr className="border-b-2 border-gray-300">
-                        <th className="px-3 py-2]">Nome</th>
+                        <th className="px-3 py-2">Nome</th>
                         <th className="px-3 py-2">CPF</th>
                         <th className="px-3 py-2">Telefone</th>
                         <th className="px-3 py-2">Status</th>

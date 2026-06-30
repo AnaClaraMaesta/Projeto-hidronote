@@ -1,38 +1,40 @@
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getProcessos } from '../services/getProcesso';
-import { getCliente } from '../services/getCliente';
-import type { Processo, Cliente } from '../types/models.types';
+import type { Processo } from '../types/models.types';
+import type { ApiResponse } from '../types/api.types';
 import { useNavigate } from 'react-router-dom';
 
-export function ProcessosListar(){
+export default function ProcessosListar(){
+    const [processo, setProcesso] = useState<Processo[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const { clienteId } = useParams<{ clienteId: string}>();
-    const [processo, setProcessos] = useState<Processo[]>([]);
-    const [cliente, setCliente] = useState<Cliente | null>(null);
-
     useEffect(() => {
-        if (!clienteId) return;
 
-        async function fetchData() {
-            const [processoResult, clienteResult] = await Promise.all([ //dissipar duas buscas com promise all
-                getProcessos(Number(clienteId)),
-                getCliente(),
-            ]);
-
-            if (processoResult.success) setProcessos(processoResult.data ?? []);
-            else console.error(processoResult.error);
-
-            if (clienteResult.success) setCliente(clienteResult.data[0] ?? null);
-            else console.error(clienteResult.error);
+        async function fetchProcessos(){
+            try{
+                const res = await fetch('http://localhost:3001/clientes')
+                const json: ApiResponse<Processo[]> = await res.json();
+    
+                if (!json.success) {
+                    setError(json.error);
+                    return;
+                } 
+    
+                setProcesso(json.data);
+            }catch(err: unknown){
+                const message = err instanceof Error ? err.message : 'Erro desconhecido';
+                setError(message);
+            } finally {
+                setLoading(false);
+          }
         }
-
-
-
-        fetchData();
-    }, [clienteId],);
-
+        fetchProcessos();
+    
+        
+    }, []);
+    if (loading) return <p>Carregando...</p>;
+    if (error) return <p>Erro: {error}</p>;
 
  return(
     <div className='min-h-screen bg-gray-50 p-8'>
